@@ -25,3 +25,10 @@ async def ask(request: Request, message: Message) -> dict:
     chatbot = Chatbot(message.session_id)
     response = chatbot.ask(message.message)
     return response
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    # Bind to 0.0.0.0 to allow requests from any IP address
+    uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -80,13 +80,21 @@ class Chatbot:
     ]
 
     def __init__(self, session_id):
+
+        # TO PARSE COOKIES:
+        # get a cookies.txt file and put in main dir from the extension: ExportThisCookie
+
+        # get cookies and parse to headers
+        cookie_text = open("cookies.txt", "r").read()
+        cookies = json.loads(cookie_text.split("cookies = ")[1])
+
+        cookie_string = ""
+        for key, value in cookies.items():
+            cookie_string += f"{key}={value}; "
+        cookie_string = cookie_string[:-2]
+
         headers = {
-            "Host": "bard.google.com",
-            "X-Same-Domain": "1",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36",
-            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-            "Origin": "https://bard.google.com",
-            "Referer": "https://bard.google.com/",
+            'Cookie': cookie_string
         }
         self._reqid = int("".join(random.choices(string.digits, k=4)))
         self.conversation_id = ""
@@ -99,7 +107,7 @@ class Chatbot:
         self.SNlM0e = self.__get_snlm0e()
 
     def __get_snlm0e(self):
-        resp = self.session.get(url="https://bard.google.com/", timeout=10)
+        resp = self.session.get(url="https://gemini.google.com/app", timeout=10)
         # Find "SNlM0e":"<ID>"
         print(resp.status_code)
         if resp.status_code != 200:
@@ -115,7 +123,7 @@ class Chatbot:
         """
         # url params
         params = {
-            "bl": "boq_assistant-bard-web-server_20230326.21_p0",
+            "bl": "boq_assistant-bard-web-server_20240327.10_p2",
             "_reqid": str(self._reqid),
             "rt": "c",
         }
@@ -136,7 +144,7 @@ class Chatbot:
 
         # do the request!
         resp = self.session.post(
-            "https://bard.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate",
+            "https://gemini.google.com/_/BardChatUi/data/assistant.lamda.BardFrontendService/StreamGenerate",
             params=params,
             data=data,
             timeout=120,
